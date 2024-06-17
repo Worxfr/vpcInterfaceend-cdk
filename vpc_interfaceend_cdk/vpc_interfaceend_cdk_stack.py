@@ -38,19 +38,25 @@ class VpcInterfaceendCdkStack(Stack):
         # add private endpoints for session manager
         vpc.add_interface_endpoint('SsmEndpoint', 
             service=ec2.InterfaceVpcEndpointAwsService.SSM,
-            subnets=ec2.SubnetSelection(subnet_filters=[ec2.SubnetFilter.by_cidr_ranges(["100.64.0.0/16"])]),
+            subnets={
+                "subnets": [private_subnet]
+            },
             open=True,
             private_dns_enabled=True
         )
         vpc.add_interface_endpoint('SsmMessagesEndpoint', 
             service=ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-            subnets=ec2.SubnetSelection(subnet_filters=[ec2.SubnetFilter.by_cidr_ranges(["100.64.0.0/16"])]),
+            subnets={
+                "subnets": [private_subnet]
+            },
             open=True,
             private_dns_enabled=True
         )
         vpc.add_interface_endpoint('Ec2MessagesEndpoint', 
             service=ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-            subnets=ec2.SubnetSelection(subnet_filters=[ec2.SubnetFilter.by_cidr_ranges(["100.64.0.0/16"])]),
+            subnets={
+                "subnets": [private_subnet]
+            },
             open=True,
             private_dns_enabled=True
         )
