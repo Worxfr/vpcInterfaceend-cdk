@@ -36,30 +36,16 @@ class VpcInterfaceendCdkStack(Stack):
         private_subnet.add_dependency(vpc1cidr2)
 
         # add private endpoints for session manager
-        vpc.add_interface_endpoint('SsmEndpoint', 
-            service=ec2.InterfaceVpcEndpointAwsService.SSM,
-            subnets={
-                "subnets": [private_subnet]
-            },
-            open=True,
+        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssm-vpce', 
+            service_name='com.amazonaws.eu-west-3.ssm',
+            vpc_id=vpc.vpc_id,
+            subnet_ids=[private_subnet.attr_subnet_id],
+            #securityGroupIds: [vpc.vpcDefaultSecurityGroup],
+            vpc_endpoint_type='Interface',
             private_dns_enabled=True
         )
-        vpc.add_interface_endpoint('SsmMessagesEndpoint', 
-            service=ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-            subnets={
-                "subnets": [private_subnet]
-            },
-            open=True,
-            private_dns_enabled=True
-        )
-        vpc.add_interface_endpoint('Ec2MessagesEndpoint', 
-            service=ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-            subnets={
-                "subnets": [private_subnet]
-            },
-            open=True,
-            private_dns_enabled=True
-        )
+
+        cfnVPCEndpointSsm.add_dependency(private_subnet)
 
         # Create an EC2 instance
         instance = ec2.Instance(self, "EC2Instance VPC1",
@@ -68,3 +54,8 @@ class VpcInterfaceendCdkStack(Stack):
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_filters=[ec2.SubnetFilter.by_cidr_ranges(["10.10.0.0/16"])])
         )
+
+
+
+
+        
