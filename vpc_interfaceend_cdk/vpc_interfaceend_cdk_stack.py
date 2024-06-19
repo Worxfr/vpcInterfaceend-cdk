@@ -35,12 +35,38 @@ class VpcInterfaceendCdkStack(Stack):
          
         private_subnet.add_dependency(vpc1cidr2)
 
+        mySG = ec2.SecurityGroup(self, "security-group-Alexis",
+            vpc=vpc,
+            allow_all_outbound=True,
+            description='CDK VPC Endp Security Group'
+        )
+
+        mySG.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), 'HTTPS frm anywhere')
+
         # add private endpoints for session manager
         cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssm-vpce', 
             service_name='com.amazonaws.eu-west-3.ssm',
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
-            #securityGroupIds: [vpc.vpcDefaultSecurityGroup],
+            security_group_ids=[mySG.security_group_id],
+            vpc_endpoint_type='Interface',
+            private_dns_enabled=True
+        )
+
+        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssmmessages-vpce', 
+            service_name='com.amazonaws.eu-west-3.ssmmessages',
+            vpc_id=vpc.vpc_id,
+            subnet_ids=[private_subnet.attr_subnet_id],
+            security_group_ids=[mySG.security_group_id],
+            vpc_endpoint_type='Interface',
+            private_dns_enabled=True
+        )
+
+        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ec2-vpce', 
+            service_name='com.amazonaws.eu-west-3.ec2',
+            vpc_id=vpc.vpc_id,
+            subnet_ids=[private_subnet.attr_subnet_id],
+            security_group_ids=[mySG.security_group_id],
             vpc_endpoint_type='Interface',
             private_dns_enabled=True
         )
