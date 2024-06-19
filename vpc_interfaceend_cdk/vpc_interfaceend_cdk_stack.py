@@ -1,6 +1,7 @@
 from aws_cdk  import (
     Stack,
     aws_ec2 as ec2,
+    Aws
 ) 
 
 import aws_cdk as cdk
@@ -35,7 +36,7 @@ class VpcInterfaceendCdkStack(Stack):
          
         private_subnet.add_dependency(vpc1cidr2)
 
-        mySG = ec2.SecurityGroup(self, "security-group-Alexis",
+        mySG = ec2.SecurityGroup(self, "security-group-VPCes",
             vpc=vpc,
             allow_all_outbound=True,
             description='CDK VPC Endp Security Group'
@@ -45,7 +46,7 @@ class VpcInterfaceendCdkStack(Stack):
 
         # add private endpoints for session manager
         cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssm-vpce', 
-            service_name='com.amazonaws.eu-west-3.ssm',
+            service_name="com.amazonaws."+Aws.REGION+".ssm",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
@@ -54,7 +55,7 @@ class VpcInterfaceendCdkStack(Stack):
         )
 
         cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssmmessages-vpce', 
-            service_name='com.amazonaws.eu-west-3.ssmmessages',
+            service_name="com.amazonaws."+Aws.REGION+".ssmmessages",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
@@ -63,7 +64,7 @@ class VpcInterfaceendCdkStack(Stack):
         )
 
         cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ec2-vpce', 
-            service_name='com.amazonaws.eu-west-3.ec2',
+            service_name="com.amazonaws."+Aws.REGION+".ec2",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
