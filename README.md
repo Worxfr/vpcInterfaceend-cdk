@@ -5,6 +5,22 @@ In this project, the goal is just to create the following Architecture, using AW
 
 ![image](img/Endpoint.drawio.png))
 
+# Goal : 
+
+We wants to create a session with Session Manager to an EC2 instance in a Private subnet using primary CIDR without Internet connectivity (no Nat, no IGW) using VPC Endpoint who are in a secondary CIDR which use the secondary CIDR. It doesn't work with the CDK L2 Construct
+
+- VPC
+  - 2 CIDR
+    - Primary CIDR : 10.10.0.0/16
+    - Secondary CIDR : 100.64.0.0/16
+  - Subnets
+    - Subnet 1 : 10.10.0.0/24
+      - Instance EC2
+    - Subnet 2 : 100.64.0.0/24
+      - VPC endpoints
+        - SSM
+        - SSM Message
+        - EC2
 
 
 
