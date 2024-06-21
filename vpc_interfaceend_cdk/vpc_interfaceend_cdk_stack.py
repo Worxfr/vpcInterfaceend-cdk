@@ -45,34 +45,33 @@ class VpcInterfaceendCdkStack(Stack):
         mySG.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), 'HTTPS frm anywhere')
 
         # add private endpoints for session manager
-        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssm-vpce', 
+        ec2.CfnVPCEndpoint(self, 'ssm-vpce', 
             service_name="com.amazonaws."+Aws.REGION+".ssm",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
             vpc_endpoint_type='Interface',
             private_dns_enabled=True
-        )
+        ).add_dependency(private_subnet)
 
-        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ssmmessages-vpce', 
+        ec2.CfnVPCEndpoint(self, 'ssmmessages-vpce', 
             service_name="com.amazonaws."+Aws.REGION+".ssmmessages",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
             vpc_endpoint_type='Interface',
             private_dns_enabled=True
-        )
+        ).add_dependency(private_subnet)
 
-        cfnVPCEndpointSsm =  ec2.CfnVPCEndpoint(self, 'ec2-vpce', 
+        ec2.CfnVPCEndpoint(self, 'ec2-vpce', 
             service_name="com.amazonaws."+Aws.REGION+".ec2",
             vpc_id=vpc.vpc_id,
             subnet_ids=[private_subnet.attr_subnet_id],
             security_group_ids=[mySG.security_group_id],
             vpc_endpoint_type='Interface',
             private_dns_enabled=True
-        )
+        ).add_dependency(private_subnet)
 
-        cfnVPCEndpointSsm.add_dependency(private_subnet)
 
         # Create an EC2 instance
         instance = ec2.Instance(self, "EC2Instance VPC1",
